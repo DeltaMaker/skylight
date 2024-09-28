@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pwd
 import time
 import asyncio
+import argparse
 import websockets
 import json
 import configparser
@@ -207,13 +208,13 @@ class SkylightService:
         if not self.led_controller:
             return
         if mode == 'temp':
-            self.led_controller.set_data_fields([["fade", percent, 30, "blue", "red", 0]])
+            self.led_controller.set_data_fields([["fade", percent, self.led_count, "blue", "red", 0]])
         elif mode == 'progress':
-            self.led_controller.set_data_fields([["progress", percent, 30, "green", "white", 0]])
+            self.led_controller.set_data_fields([["progress", percent, self.led_count, "green", "white", 0]])
         elif mode == 'paused':
-            self.led_controller.set_data_fields([["chase", 0, 30, "black", "yellow", 0]])
+            self.led_controller.set_data_fields([["chase", 0, self.led_count, "black", "yellow", 0]])
         elif mode == 'idle':
-            self.led_controller.set_data_fields([["chase", 0, 30, "white", "black", 0]])
+            self.led_controller.set_data_fields([["chase", 0, self.led_count, "white", "black", 0]])
 
     async def listen_for_skylight_commands(self, websocket, path):
         while True:
@@ -278,10 +279,23 @@ class SkylightService:
                 print("Attempting to reconnect to Moonraker...")
             time.sleep(self.retry_interval)  # Wait before retrying to connect to Moonraker
 
-# Example Usage
+# Main entry point
 def main():
-    config_file = '/home/pi/printer_data/config/skylight.conf'
-    config_file = '/tmp/skylight.conf'
+    # Use argparse to handle command-line arguments
+    parser = argparse.ArgumentParser(description="Skylight service configuration")
+    parser.add_argument(
+        "--config",
+        default="/home/pi/printer_data/config/skylight.conf",
+        help="Path to the configuration file (default: /home/pi/printer_data/config/skylight.conf)"
+    )
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Use the config file provided via command line, or fallback to default
+    config_file = args.config
+
+    # Initialize and run the Skylight service
     client = SkylightService(config_file)
     client.run()
 

@@ -3,10 +3,16 @@ Description=Skylight Daemon
 After=network.target
 
 [Service]
-Type=simple
+# User must be explicitly defined
 User=root
+
+# Use an absolute path for WorkingDirectory
 WorkingDirectory=/home/pi/skylight
-ExecStart=/home/pi/skylight-env/bin/python /home/pi/skylight/skylight_main.py --config /home/pi/skylight/scripts/config.yaml
+
+# Hard-code the Python executable and config file path
+ExecStart=/home/pi/skylight-env/bin/python /home/pi/skylight/skylight_main.py --config /home/pi/skylight/scripts/skylight.conf
+
+# Restart policy
 Restart=always
 StandardOutput=journal
 StandardError=journal

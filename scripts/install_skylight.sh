@@ -8,7 +8,7 @@ SCRIPTS_DIR="${INSTALL_PATH}/scripts"    # Path to the scripts directory
 PYTHONDIR="${HOME}/skylight-env"         # Python virtual environment directory
 REQUIREMENTS="${SCRIPTS_DIR}/requirements.txt"   # Path to requirements.txt in scripts directory
 DEFAULTS_FILE="/etc/default/skylight"    # Path to the /etc/default/skylight file
-CONFIG_PATH="${SCRIPTS_DIR}/config.yaml" # Path to config.yaml in scripts directory
+CONFIG_PATH="${SCRIPTS_DIR}/skylight.conf" # Path to config file in scripts directory
 
 # Force script to exit if an error occurs
 set -e
@@ -66,10 +66,11 @@ create_defaults_file() {
     sudo /bin/sh -c "cat > ${DEFAULTS_FILE}" <<EOF
 # Configuration for Skylight Daemon
 
-SKYLIGHT_USER=root
-SKYLIGHT_EXEC=${PYTHONDIR}/bin/python
-SKYLIGHT_ARGS="${INSTALL_PATH}/skylight_main.py --config ${CONFIG_PATH}"
+# Path to the Python executable in the virtual environment
+SKYLIGHT_EXEC=/home/pi/skylight-env/bin/python
 
+# Path to the Skylight configuration file
+SKYLIGHT_CONF=/home/pi/skylight/scripts/skylight.conf
 EOF
 
     echo "[CONFIG] /etc/default/skylight file created!"
@@ -79,16 +80,25 @@ EOF
 install_service() {
     echo "[INSTALL] Installing Skylight service..."
 
-    # Reference the skylight.service file from the scripts directory
+    # Overwrite the service file each time
     S=$(<"${SCRIPTS_DIR}/skylight.service")
-
     S=$(sed "s|TC_USER|$(whoami)|g" <<< "$S")
 
+    # Write the service file to /etc/systemd/system/
     echo "$S" | sudo tee "${SERVICE}" > /dev/null
 
+    # Verify that the service file has been overwritten
+    echo "[DEBUG] Skylight service file contents:"
+    cat "${SERVICE}"
+
+    # Reload systemd to pick up the new service file
     sudo systemctl daemon-reload
+
+    # Enable and start the Skylight service
     sudo systemctl enable skylight.service
-    echo "[INSTALL] Skylight service installed and enabled!"
+    sudo systemctl start skylight.service
+
+    echo "[INSTALL] Skylight service installed, enabled, and started!"
 }
 
 # Step 6: Start the Skylight service
