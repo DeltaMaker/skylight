@@ -1,0 +1,15 @@
+[Unit]
+Description=Skylight Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/skylight
+ExecStart=/home/pi/skylight-env/bin/python /home/pi/skylight/skylight_main.py --config /home/pi/skylight/scripts/config.yaml
+Restart=always
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
