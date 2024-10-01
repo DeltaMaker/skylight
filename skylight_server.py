@@ -260,7 +260,7 @@ class SkylightServer(BaseWebSocketServer):
         await self.moonraker_client.stop()
 
 def main():
-    config_manager = ConfigManager(config_file='test.conf')
+    config_manager = ConfigManager(config_file='skylight.conf')
     server = SkylightServer(config_manager)
     server.start()
 

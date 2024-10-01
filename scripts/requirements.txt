@@ -6,5 +6,5 @@ rpi_ws281x
 RPi.GPIO
 adafruit-circuitpython-neopixel
 websockets
-##mediapipe
+mediapipe
 ##scikit-learn

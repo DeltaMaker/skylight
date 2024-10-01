@@ -10,7 +10,7 @@ User=root
 WorkingDirectory=/home/pi/skylight
 
 # Hard-code the Python executable and config file path
-ExecStart=/home/pi/skylight-env/bin/python /home/pi/skylight/skylight_main.py --config /home/pi/skylight/scripts/skylight.conf
+ExecStart=/home/pi/skylight-env/bin/python /home/pi/skylight/skylight_server.py --config /home/pi/skylight/scripts/skylight.conf
 
 # Restart policy
 Restart=always
